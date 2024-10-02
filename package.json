@@ -1,0 +1,13 @@
+{
+  "name": "slowdown",
+  "version": "1.0.0",
+  "description": "Slow Down!",
+  "scripts": {
+    "serve": "parcel serve index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.12.0"
+  }
+}
