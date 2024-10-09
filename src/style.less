@@ -1,0 +1,61 @@
+:root {
+    --bg: #333;
+    --mg: #444;
+    --fg: #bbb;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: sans-serif;
+    margin: 0;
+}
+
+.app {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+
+    header {
+        flex-basis: 25vmin;
+        font-size: 12vmin;
+        font-weight: bold;
+        line-height: 25vmin;
+    }
+
+    svg {
+        flex: 1;
+        width: 50vmin;
+        height: 50vmin;
+
+        .time {
+            fill: var(--fg);
+        }
+
+        .ring {
+            fill: transparent;
+            stroke: var(--mg);
+            stroke-linecap: round;
+            stroke-width: 8;
+        }
+    }
+
+    footer {
+        flex-basis: 25vmin;
+        button {
+            background-color: var(--mg);
+            border: 0;
+            border-radius: 50%;
+            color: var(--fg);
+            font-size: 5vmin;
+            margin-top: 5vmin;
+            width: 15vmin;
+            height: 15vmin;
+
+            &[active] {
+                border: 2px var(--fg) solid;
+            }
+        }
+    }
+}
