@@ -2,6 +2,7 @@
     --bg: #333;
     --mg: #444;
     --fg: #bbb;
+    --ac: #96c;
 }
 
 body {
@@ -35,9 +36,16 @@ body {
 
         .ring {
             fill: transparent;
-            stroke: var(--mg);
             stroke-linecap: round;
             stroke-width: 8px;
+
+            &-bg {
+                stroke: var(--mg);
+            }
+
+            &-fg {
+                stroke: var(--ac);
+            }
         }
     }
 
