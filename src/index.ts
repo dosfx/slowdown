@@ -6,7 +6,7 @@ self.addEventListener("DOMContentLoaded", () => {
     const ring = new RingWrapper("svg .ring");
     const time = new TimeWrapper("svg .time");
     const play = new ButtonWrapper("button.play");
-    let running: number | null;
+    let running: NodeJS.Timeout | null;
     let startTime = 0;
     let seconds = 60;
     ring.setPercent(100);
