@@ -19,14 +19,15 @@ body {
     height: 100%;
 
     header {
-        flex-basis: 25vmin;
+        flex: 1;
         font-size: 12vmin;
         font-weight: bold;
-        line-height: 25vmin;
+
+        display: flex;
+        align-items: center;
     }
 
     svg {
-        flex: 1;
         width: 50vmin;
         height: 50vmin;
 
@@ -50,14 +51,17 @@ body {
     }
 
     footer {
-        flex-basis: 25vmin;
+        flex: 1;
+
+        display: flex;
+        align-items: flex-end;
         button {
             background-color: var(--mg);
             border: 0;
             border-radius: 50%;
             color: var(--fg);
             font-size: 5vmin;
-            margin-top: 5vmin;
+            margin-bottom: 5vmin;
             width: 15vmin;
             height: 15vmin;
 
