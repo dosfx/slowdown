@@ -12,7 +12,44 @@ describe("RingWrapper", () => {
 
     afterEach(() => {
         element.remove();
-    })
+    });
+
+    test.each([
+        [0, 50, 0],
+        [90, 100, 50],
+        [180, 50, 100],
+        [270, 0, 50],
+        [360, 50, 0],
+    ])("getCoord(%i) == [%i, %i]", (deg, expectedX, expectedY) => {
+        const wrapper = new RingWrapper(".ring");
+        const toRad = (deg: number) => (deg * Math.PI) / 180;
+        const [x, y] = wrapper.getCoords(50, toRad(deg));
+        expect(x).toBeCloseTo(expectedX);
+        expect(y).toBeCloseTo(expectedY);
+    });
+
+    test.each([
+        [50, 0, 0],
+        [100, 0, 45],
+        [100, 50, 90],
+        [100, 100, 135],
+        [50, 100, 180],
+        [0, 100, 225],
+        [0, 50, 270],
+        [0, 0, 315],
+    ])("getRad(%i, %i) == %i degress", (x, y, deg) => {
+        const wrapper = new RingWrapper(".ring");
+        const toDeg = (rad: number) => ((rad * (180 / Math.PI)) + 360) % 360;
+        expect(toDeg(wrapper.getRad(x, y))).toBeCloseTo(deg)
+    });
+
+    test("getScaledCoords", () => {
+        document.body.style.width = "200px";
+        const wrapper = new RingWrapper(".ring");
+        const [x, y] = wrapper.getScaledCoords({ offsetX: 100, offsetY: 100 } as MouseEvent);
+        expect(x).toBe(50);
+        expect(y).toBe(50);
+    });
 
     test.each([
         [0, 8, "M 50 5 A 45 45 0 0 1 50 5"],
@@ -27,7 +64,7 @@ describe("RingWrapper", () => {
         [100, 12, "M 50 7 A 43 43 0 0 1 50 93 A 43 43 0 0 1 50 7"],
         [-1, 8, "M 50 5 A 45 45 0 0 1 50 5"],
         [101, 8, "M 50 5 A 45 45 0 0 1 50 95 A 45 45 0 0 1 50 5"],
-    ])("%i% ring path %i width", (percent: number, width: number, expected: string) => {
+    ])("setPercent(%i) %i width", (percent: number, width: number, expected: string) => {
         element.style.strokeWidth = width + "px";
         const wrapper = new RingWrapper(".ring");
         wrapper.setPercent(percent);
@@ -43,9 +80,3 @@ describe("RingWrapper", () => {
         }
     });
 });
-
-
-// const d = ["M 50", this.center - this.radius];
-//         const rad = (percent / 50) * Math.PI;
-//         if (percent < 50) {
-//             d.push("A", this.radius, this.radius, 0, 0, 1, this.center + (this.radius * Math.sin(rad)), this.center - (this.radius * Math.cos(rad)));
