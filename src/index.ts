@@ -11,8 +11,12 @@ self.addEventListener("DOMContentLoaded", () => {
     let startTime = 0;
     let seconds = 60;
     ringBg.setPercent(100);
-    ring.setPercent(40);
+    ring.setPercent(100);
     time.setTime(seconds);
+    ring.onChange((change: number) => {
+        seconds += change;
+        time.setTime(seconds);
+    });
     play.onClick(() => {
         if (running) {
             clearInterval(running);

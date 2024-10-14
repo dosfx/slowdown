@@ -1,32 +1,33 @@
 import { ElementWrapper } from "./ElementWrapper";
 
-export class RingWrapper extends ElementWrapper{
+type ChangeHandler = (change: number) => void;
+
+type Coords = [number, number];
+
+export class RingWrapper extends ElementWrapper {
     private readonly center: number;
     private readonly width: number;
     private readonly radius: number;
+    private changeHandler?: ChangeHandler;
+    private dragging = false;
+    private lastRad = 0;
+    private lastNow = 0;
 
     constructor(query: string) {
         super(query);
         this.center = 50;
         this.width = parseInt(getComputedStyle(this.el).strokeWidth);
         this.radius = this.center - (this.width / 2) - 1;
+        this.on("pointercancel", this.endDrag);
+        this.on("pointerdown", this.onPointerDown);
+        this.on("pointerup", this.endDrag);
     }
 
-    getCoords(r: number, rad: number): [number, number] {
-        return [
-            this.center + (r * Math.sin(rad)),
-            this.center - (r * Math.cos(rad)),
-        ];
-    }
-
-    getRad(x: number, y: number): number {
-        return Math.atan2(x - this.center, this.center - y);
-    }
-
-    getScaledCoords(event: MouseEvent): [number, number] {
-        const scale = parseFloat(getComputedStyle(this.el.parentElement).width) / 100;
-        console.log(event.offsetX, scale);
-        return [event.offsetX / scale, event.offsetY / scale];
+    onChange(handler: ChangeHandler) {
+        if (this.changeHandler) {
+            throw new Error("Cannot register multiple change handlers");
+        }
+        this.changeHandler = handler;
     }
 
     setPercent(percent: number) {
@@ -40,5 +41,55 @@ export class RingWrapper extends ElementWrapper{
             d.push("A", this.radius, this.radius, 0, 0, 1, x, y);
         }
         this.el.setAttribute("d", d.join(" "));
+    }
+
+    private getCoords(r: number, rad: number): Coords {
+        return [
+            this.center + (r * Math.sin(rad)),
+            this.center - (r * Math.cos(rad)),
+        ];
+    }
+
+    private getRad(x: number, y: number): number {
+        return Math.atan2(x - this.center, this.center - y);
+    }
+
+    private getScaledCoords(event: MouseEvent): Coords {
+        const scale = parseFloat(getComputedStyle(this.el.parentElement!).width) / 100;
+        return [event.offsetX / scale, event.offsetY / scale];
+    }
+
+    private endDrag(event: PointerEvent) {
+        this.off("pointermove", this.onPointerMove);
+        this.off("lostpointercapture", this.endDrag);
+        this.el.releasePointerCapture(event.pointerId);
+        this.dragging = false;
+    }
+
+    private onPointerDown(event: PointerEvent) {
+        if (this.dragging) return;
+        this.dragging = true;
+        this.lastRad = this.getRad(...this.getScaledCoords(event));
+        this.lastNow = Date.now();
+        this.el.setPointerCapture(event.pointerId);
+        this.on("pointermove", this.onPointerMove);
+        this.on("lostpointercapture", this.endDrag);
+    }
+
+    private onPointerMove(event: PointerEvent) {
+        if (!this.dragging) return;
+        const curNow = Date.now();
+        if (curNow - this.lastNow < 100) return;
+        const curRad = this.getRad(...this.getScaledCoords(event));
+        let diff = curRad - this.lastRad;
+        if (Math.abs(diff) > Math.PI) {
+            const pi2 = Math.PI * 2;
+            diff = ((curRad + pi2) % pi2) - ((this.lastRad + pi2) % pi2);
+        }
+        if (this.changeHandler) {
+            this.changeHandler(Math.floor(diff * 40));
+        }
+        this.lastRad = curRad;
+        this.lastNow = curNow;
     }
 }
