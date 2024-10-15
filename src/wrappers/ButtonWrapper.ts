@@ -10,8 +10,8 @@ export class ButtonWrapper extends ElementWrapper {
     constructor(query: string) {
         super(query);
         this.toggle = this.el.hasAttribute(ButtonWrapper.ToggleAttr);
-        this.el.addEventListener("mousedown", this.onDown.bind(this));
-        this.el.addEventListener("mouseup", this.onUp.bind(this));
+        this.on("mousedown", this.onDown);
+        this.on("mouseup", this.onUp);
     }
 
     public get active(): boolean {
