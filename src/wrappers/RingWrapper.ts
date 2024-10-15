@@ -87,7 +87,7 @@ export class RingWrapper extends ElementWrapper {
             diff = ((curRad + pi2) % pi2) - ((this.lastRad + pi2) % pi2);
         }
         if (this.changeHandler) {
-            this.changeHandler(Math.floor(diff * 40));
+            this.changeHandler(Math.floor(diff * 30));
         }
         this.lastRad = curRad;
         this.lastNow = curNow;
