@@ -1,28 +1,28 @@
 import { ElementWrapper } from "./ElementWrapper";
 
 export class ButtonWrapper extends ElementWrapper {
-    protected static readonly ActiveAttr = "active";
-    protected static readonly ToggleAttr = "toggle";
+    protected readonly ActiveAttr = "active";
+    protected readonly ToggleAttr = "toggle";
     protected state: boolean;
     protected clickHandler?: () => void;
     public readonly toggle: boolean;
 
     constructor(query: string) {
         super(query);
-        this.toggle = this.el.hasAttribute(ButtonWrapper.ToggleAttr);
+        this.toggle = this.hasAttr(this.ToggleAttr);
         this.on("mousedown", this.onDown);
         this.on("mouseup", this.onUp);
     }
 
     public get active(): boolean {
-        return this.el.hasAttribute(ButtonWrapper.ActiveAttr);
+        return this.hasAttr(this.ActiveAttr);
     }
 
     public set active(a: boolean) {
         if (a) {
-            this.el.setAttribute(ButtonWrapper.ActiveAttr, "");
+            this.setAttr(this.ActiveAttr);
         } else {
-            this.el.removeAttribute(ButtonWrapper.ActiveAttr);
+            this.clearAttr(this.ActiveAttr);
         }
     }
 

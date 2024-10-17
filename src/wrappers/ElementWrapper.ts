@@ -1,14 +1,41 @@
-export abstract class ElementWrapper {
+export class ElementWrapper {
     protected readonly el: Element;
     protected readonly handlers: Map<any, EventListener>;
 
-    constructor(query: string) {
-        const el = document.querySelector(query);
+    constructor(query: string);
+    constructor(element: Element);
+    constructor(input: string | Element) {
+        this.el = input instanceof Element ? input :
+            this.throwNoEl(document.querySelector(input), input)
+        this.handlers = new Map();
+    }
+
+    private throwNoEl(el: Element | null, query: string) {
         if (!el) {
             throw new Error(`Couldn't initialize wrapper: "${query}" not found`);
         }
-        this.el = el;
-        this.handlers = new Map();
+        return el;
+    }
+
+    child(query: string) {
+        const el = this.throwNoEl(this.el.querySelector(query), query);
+        return new ElementWrapper(el);
+    }
+
+    clearAttr(attr: string) {
+        this.el.removeAttribute(attr);
+    }
+
+    getAttr(attr: string) {
+        return this.el.getAttribute(attr);
+    }
+
+    hasAttr(attr: string) {
+        return this.el.hasAttribute(attr);
+    }
+
+    setAttr(attr: string, value: string = "") {
+        this.el.setAttribute(attr, value);
     }
 
     protected on<T extends Event>(type: string, handler: (event: T) => void) {
