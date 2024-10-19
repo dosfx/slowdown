@@ -17,24 +17,24 @@ export class ElementWrapper {
         return el;
     }
 
-    child(query: string) {
+    public child(query: string) {
         const el = this.throwNoEl(this.el.querySelector(query), query);
         return new ElementWrapper(el);
     }
 
-    clearAttr(attr: string) {
+    public clearAttr(attr: string) {
         this.el.removeAttribute(attr);
     }
 
-    getAttr(attr: string) {
+    public getAttr(attr: string) {
         return this.el.getAttribute(attr);
     }
 
-    hasAttr(attr: string) {
+    public hasAttr(attr: string) {
         return this.el.hasAttribute(attr);
     }
 
-    setAttr(attr: string, value: string = "") {
+    public setAttr(attr: string, value: string = "") {
         this.el.setAttribute(attr, value);
     }
 

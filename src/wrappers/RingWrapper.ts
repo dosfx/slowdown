@@ -1,6 +1,5 @@
+import { SimpleEventDispatcher } from "ste-simple-events";
 import { ElementWrapper } from "./ElementWrapper";
-
-type ChangeHandler = (change: number) => void;
 
 type Coords = [number, number];
 
@@ -8,12 +7,12 @@ export class RingWrapper extends ElementWrapper {
     private readonly center: number;
     private readonly width: number;
     private readonly radius: number;
-    private changeHandler?: ChangeHandler;
+    private readonly _onChange = new SimpleEventDispatcher<number>();
     private dragging = false;
     private lastRad = 0;
     private lastNow = 0;
 
-    constructor(query: string) {
+    public constructor(query: string) {
         super(query);
         this.center = 50;
         this.width = parseInt(getComputedStyle(this.el).strokeWidth);
@@ -23,14 +22,11 @@ export class RingWrapper extends ElementWrapper {
         this.on("pointerup", this.endDrag);
     }
 
-    onChange(handler: ChangeHandler) {
-        if (this.changeHandler) {
-            throw new Error("Cannot register multiple change handlers");
-        }
-        this.changeHandler = handler;
+    public get onChange() {
+        return this._onChange.asEvent();
     }
 
-    setPercent(percent: number) {
+    public setPercent(percent: number) {
         percent = Math.min(Math.max(0, percent), 100);
         const d = ["M 50", this.center - this.radius];
         const [x, y] = this.getCoords(this.radius, (percent / 50) * Math.PI)
@@ -86,9 +82,7 @@ export class RingWrapper extends ElementWrapper {
             const pi2 = Math.PI * 2;
             diff = ((curRad + pi2) % pi2) - ((this.lastRad + pi2) % pi2);
         }
-        if (this.changeHandler) {
-            this.changeHandler(Math.floor(diff * 30));
-        }
+        this._onChange.dispatch(Math.floor(diff * 30));
         this.lastRad = curRad;
         this.lastNow = curNow;
     }

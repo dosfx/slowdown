@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "@parcel/transformer-less": "^2.12.0",
-    "parcel": "^2.12.0"
+    "parcel": "^2.12.0",
+    "ste-signals": "^3.0.11",
+    "ste-simple-events": "^3.0.11"
   }
 }

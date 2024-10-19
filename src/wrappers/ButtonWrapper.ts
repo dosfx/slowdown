@@ -1,10 +1,11 @@
+import { SignalDispatcher } from "ste-signals";
 import { ElementWrapper } from "./ElementWrapper";
 
 export class ButtonWrapper extends ElementWrapper {
     protected readonly ActiveAttr = "active";
     protected readonly ToggleAttr = "toggle";
     protected state: boolean;
-    protected clickHandler?: () => void;
+    protected readonly _onClick = new SignalDispatcher();
     public readonly toggle: boolean;
 
     constructor(query: string) {
@@ -26,11 +27,8 @@ export class ButtonWrapper extends ElementWrapper {
         }
     }
 
-    public onClick(handler: () => void) {
-        if (this.clickHandler) {
-            throw new Error("Cannot register multiple click handlers");
-        }
-        this.clickHandler = handler;
+    public get onClick() {
+        return this._onClick.asEvent();
     }
 
     protected onDown() {
@@ -40,8 +38,6 @@ export class ButtonWrapper extends ElementWrapper {
 
     protected onUp() {
         this.active = this.toggle && !this.state;
-        if (this.clickHandler) {
-            this.clickHandler();
-        }
+        this._onClick.dispatch();
     }
 }
