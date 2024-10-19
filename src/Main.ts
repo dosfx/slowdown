@@ -1,23 +1,28 @@
 import { Settings } from "./Settings";
-import { ButtonWrapper } from "./wrappers/ButtonWrapper";
+import { PlayWrapper } from "./wrappers/PlayWrapper";
 import { RingWrapper } from "./wrappers/RingWrapper";
 import { TimeWrapper } from "./wrappers/TimeWrapper";
 
 export class Main {
-    constructor(
-        private play: ButtonWrapper,
+    public constructor(
+        private play: PlayWrapper,
         private ring: RingWrapper,
         private settings: Settings,
         private time: TimeWrapper,
     ) {
-        play.onClick(this.onPlayClick.bind(this));
-        ring.onChange(this.onRingChange.bind(this));
-        ring.setPercent(100);
-        time.setTime(this.settings.seconds);
+        this.play.onPlay.sub(this.onPlay.bind(this));
+        this.play.onStop.sub(this.onStop.bind(this));
+        this.ring.onChange.sub(this.onRingChange.bind(this));
+        this.ring.setPercent(100);
+        this.time.setTime(this.settings.seconds);
     }
 
-    private onPlayClick() {
+    private onPlay() {
+        console.log("PLAY");
+    }
 
+    private onStop(){
+        console.log("STOP");
     }
 
     private onRingChange(change: number) {

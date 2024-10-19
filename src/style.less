@@ -28,7 +28,7 @@ body {
         align-items: center;
     }
 
-    svg {
+    svg.main {
         width: 50vmin;
         height: 50vmin;
 
@@ -68,6 +68,14 @@ body {
 
             &[active] {
                 border: 2px var(--fg) solid;
+            }
+
+            &.play {
+                background-color: var(--ac);
+            }
+
+            svg {
+                width: 40%;
             }
         }
     }
