@@ -38,6 +38,7 @@ export class Main {
         const remaining = this.settings.Countdown - ((Date.now() - this.startMillis) / 1000);
         if (remaining <= 0) {
             this.startMillis = Date.now();
+            navigator.vibrate(this.settings.VibrationPattern);
         }
         this.time.setTime(Math.ceil(remaining));
         this.ring.setPercent(remaining / this.settings.Countdown);

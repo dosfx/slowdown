@@ -9,10 +9,14 @@ export class Settings {
         return this.getSetting<number>(this.SecondsKey, 60);
     }
 
-    public readonly Interval = 30 / 1000;
-
     public set Countdown(value: number) {
         this.setSetting(this.SecondsKey, value);
+    }
+
+    public readonly Interval = 30 / 1000;
+
+    public get VibrationPattern() {
+        return [500];
     }
 
     private getSetting<T>(key: string, def: T): T {
