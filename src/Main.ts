@@ -29,10 +29,13 @@ export class Main {
 
     private onPlay() {
         if (this.ticking) return;
-        const startMillis = Date.now();
+        let startMillis = Date.now();
         this.intervalHandle = setInterval(() => {
             const remaining = this.settings.Countdown - ((Date.now() - startMillis) / 1000);
-            this.time.setTime(Math.floor(remaining));
+            if (remaining <= 0) {
+                startMillis = Date.now();
+            }
+            this.time.setTime(Math.ceil(remaining));
             this.ring.setPercent(remaining / this.settings.Countdown);
         }, this.settings.Interval);
     }
