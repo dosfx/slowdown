@@ -5,6 +5,7 @@ import { TimeWrapper } from "./wrappers/TimeWrapper";
 
 export class Main {
     private intervalHandle?: number;
+    private startMillis: number;
 
     public constructor(
         private play: PlayWrapper,
@@ -29,18 +30,20 @@ export class Main {
 
     private onPlay() {
         if (this.ticking) return;
-        let startMillis = Date.now();
-        this.intervalHandle = setInterval(() => {
-            const remaining = this.settings.Countdown - ((Date.now() - startMillis) / 1000);
-            if (remaining <= 0) {
-                startMillis = Date.now();
-            }
-            this.time.setTime(Math.ceil(remaining));
-            this.ring.setPercent(remaining / this.settings.Countdown);
-        }, this.settings.Interval);
+        this.startMillis = Date.now();
+        this.intervalHandle = setInterval(this.onTick.bind(this), this.settings.Interval);
     }
 
-    private onStop(){
+    private onTick() {
+        const remaining = this.settings.Countdown - ((Date.now() - this.startMillis) / 1000);
+        if (remaining <= 0) {
+            this.startMillis = Date.now();
+        }
+        this.time.setTime(Math.ceil(remaining));
+        this.ring.setPercent(remaining / this.settings.Countdown);
+    }
+
+    private onStop() {
         if (!this.ticking) return;
         clearInterval(this.intervalHandle);
         this.intervalHandle = undefined;
