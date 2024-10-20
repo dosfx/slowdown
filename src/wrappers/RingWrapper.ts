@@ -27,10 +27,10 @@ export class RingWrapper extends ElementWrapper {
     }
 
     public setPercent(percent: number) {
-        percent = Math.min(Math.max(0, percent), 100);
+        percent = Math.min(Math.max(0, percent), 1);
         const d = ["M 50", this.center - this.radius];
-        const [x, y] = this.getCoords(this.radius, (percent / 50) * Math.PI)
-        if (percent <= 50) {
+        const [x, y] = this.getCoords(this.radius, (percent / 0.5) * Math.PI)
+        if (percent <= 0.5) {
             d.push("A", this.radius, this.radius, 0, 0, 1, x, y);
         } else {
             d.push("A", this.radius, this.radius, 0, 0, 1, this.center, this.center + this.radius);

@@ -1,11 +1,17 @@
 export class Settings {
     private readonly SecondsKey = "seconds";
 
-    get seconds() {
+    public readonly CountdownMax = 60 * 10;
+
+    public readonly CountdownMin = 5;
+
+    public get Countdown() {
         return this.getSetting<number>(this.SecondsKey, 60);
     }
 
-    set seconds(value: number) {
+    public readonly Interval = 30 / 1000;
+
+    public set Countdown(value: number) {
         this.setSetting(this.SecondsKey, value);
     }
 
