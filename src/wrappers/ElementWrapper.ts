@@ -38,6 +38,25 @@ export class ElementWrapper {
         this.el.setAttribute(attr, value);
     }
 
+    public setClass(cls: string, setclear: boolean = true) {
+        if (setclear) {
+            this.el.classList.add(cls);
+        } else {
+            this.el.classList.remove(cls);
+        }
+    }
+
+    public style(prop: string, value?: string) {
+        if (value === undefined) {
+            return getComputedStyle(this.el)[prop];
+        }
+        if (this.el instanceof HTMLElement) {
+            this.el.style.setProperty(prop, value);
+        } else if (this.el instanceof SVGElement) {
+            this.el.attributeStyleMap.set(prop, value);
+        }
+    }
+
     protected on<T extends Event>(type: string, handler: (event: T) => void) {
         let bound = this.handlers.get(handler);
         if (!bound) {

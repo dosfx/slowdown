@@ -30,7 +30,6 @@ export class PlayWrapper extends ButtonWrapper {
 
     private get play() {
         return this._play;
-
     }
 
     private set play(play: boolean) {
