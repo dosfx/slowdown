@@ -1,8 +1,6 @@
 import { SimpleEventDispatcher } from "ste-simple-events";
 import { ElementWrapper } from "./ElementWrapper";
 
-type Coords = [number, number];
-
 export class RingWrapper extends ElementWrapper {
     private readonly center: number;
     private readonly width: number;
@@ -33,13 +31,9 @@ export class RingWrapper extends ElementWrapper {
         this.style("stroke-dasharray", `${percent * this.circ}px ${this.circ}px`);
     }
 
-    private getRad(x: number, y: number): number {
-        return Math.atan2(x - this.center, this.center - y);
-    }
-
-    private getScaledCoords(event: MouseEvent): Coords {
+    private getRad(event: MouseEvent): number {
         const scale = parseFloat(getComputedStyle(this.el.parentElement!).width) / 100;
-        return [event.offsetX / scale, event.offsetY / scale];
+        return Math.atan2((event.offsetX / scale) - this.center, this.center - (event.offsetY / scale));
     }
 
     private endDrag(event: PointerEvent) {
@@ -52,7 +46,7 @@ export class RingWrapper extends ElementWrapper {
     private onPointerDown(event: PointerEvent) {
         if (this.dragging) return;
         this.dragging = true;
-        this.lastRad = this.getRad(...this.getScaledCoords(event));
+        this.lastRad = this.getRad(event);
         this.lastNow = Date.now();
         this.el.setPointerCapture(event.pointerId);
         this.on("pointermove", this.onPointerMove);
@@ -63,7 +57,7 @@ export class RingWrapper extends ElementWrapper {
         if (!this.dragging) return;
         const curNow = Date.now();
         if (curNow - this.lastNow < 100) return;
-        const curRad = this.getRad(...this.getScaledCoords(event));
+        const curRad = this.getRad(event);
         let diff = curRad - this.lastRad;
         if (Math.abs(diff) > Math.PI) {
             const pi2 = Math.PI * 2;
