@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Slow Down!",
   "scripts": {
+    "clean": "rimraf .parcel-cache dist",
     "serve": "parcel serve src/index.html",
     "test": "jest"
   },
@@ -13,5 +14,8 @@
     "parcel": "^2.12.0",
     "ste-signals": "^3.0.11",
     "ste-simple-events": "^3.0.11"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.10"
   }
 }
