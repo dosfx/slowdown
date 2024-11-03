@@ -1,19 +1,36 @@
+import { InjectionKey, readonly, ref, watch } from "vue";
+
+export const SettingsKey = Symbol() as InjectionKey<Settings>;
+
+const CountdownKey = "countdown";
+
 export class Settings {
-    private readonly SecondsKey = "seconds";
+    private readonly _countdownRef;
+
+    constructor () {
+        this._countdownRef = ref(this.getSetting<number>(CountdownKey, 60));
+        watch(this._countdownRef, (value) => this.setSetting(CountdownKey, value));
+    }
 
     public readonly CountdownMax = 60 * 10;
 
     public readonly CountdownMin = 5;
 
     public get Countdown() {
-        return this.getSetting<number>(this.SecondsKey, 60);
+        return this._countdownRef.value;
     }
 
     public set Countdown(value: number) {
-        this.setSetting(this.SecondsKey, value);
+        this._countdownRef.value = value;
+    }
+
+    public get CountdownRef() {
+        return readonly(this._countdownRef);
     }
 
     public readonly Interval = 30 / 1000;
+
+    public readonly Sensitivity = 10;
 
     public get VibrationPattern() {
         return [500];
