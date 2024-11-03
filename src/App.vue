@@ -1,22 +1,32 @@
 <script setup lang="ts">
 import { inject, ref } from "vue";
 import Button from "./components/Button.vue";
-import PlayButton from "./components/PlayButton.vue";
 import Ring from "./components/Ring.vue";
 import { SettingsKey } from "./settings";
 import { clamp } from "./util";
 
 const settings = inject(SettingsKey)!;
+const play = ref(true);
 const current = ref(settings.Countdown);
 const percent = ref(1);
 
 let startMillis: number;
 let intervalHandle: number | undefined;
 
-function onPlay() {
-    if (intervalHandle) return;
+async function onPlayClick() {
+    if (play.value) {
+        if (await onPlay()) return;
+    } else {
+        if (onStop()) return;
+    }
+    play.value = !play.value;
+}
+
+async function onPlay() {
+    if (intervalHandle) return true;
     startMillis = Date.now();
     intervalHandle = setInterval(onTick, settings.Interval);
+    return false;
 }
 
 function onTick() {
@@ -29,7 +39,7 @@ function onTick() {
 }
 
 function onStop() {
-    if (!intervalHandle) return;
+    if (!intervalHandle) return true;
     clearInterval(intervalHandle);
     intervalHandle = undefined;
     current.value = settings.Countdown;
@@ -37,7 +47,7 @@ function onStop() {
 }
 
 function onChange(value: number) {
-    if (intervalHandle) return;
+    if (play.value) return;
     value *= settings.Sensitivity;
     current.value = settings.Countdown = clamp(settings.Countdown + value, settings.CountdownMin, settings.CountdownMax);
 }
@@ -48,7 +58,14 @@ function onChange(value: number) {
     <header>Slow Down!</header>
     <Ring :current :percent @change="onChange"></Ring>
     <footer>
-        <PlayButton @play="onPlay" @stop="onStop" />
+        <Button class="play" @click="onPlayClick">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                <path v-if="play"
+                    d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80L0 432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z" />
+                <path v-else
+                    d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z" />
+            </svg>
+        </Button>
         <Button toggle></Button>
         <Button></Button>
         <Button></Button>
