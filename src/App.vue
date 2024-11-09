@@ -4,8 +4,12 @@ import Button from "./components/Button.vue";
 import Ring from "./components/Ring.vue";
 import { SettingsKey } from "./settings";
 import { clamp } from "./util";
+import Dialog from "./components/Dialog.vue";
+import { WakeLockKey } from "./features/wakelock";
+import WakeLockAlert from "./components/WakeLockAlert.vue";
 
 const settings = inject(SettingsKey)!;
+const wakelock = inject(WakeLockKey)!;
 const play = ref(true);
 const current = ref(settings.Countdown);
 const percent = ref(1);
@@ -24,6 +28,9 @@ async function onPlayClick() {
 
 async function onPlay() {
     if (intervalHandle) return true;
+    if (!await wakelock.request()) {
+        return true;
+    }
     startMillis = Date.now();
     intervalHandle = setInterval(onTick, settings.Interval);
     return false;
@@ -42,6 +49,7 @@ function onStop() {
     if (!intervalHandle) return true;
     clearInterval(intervalHandle);
     intervalHandle = undefined;
+    wakelock.release();
     current.value = settings.Countdown;
     percent.value = 1;
 }
@@ -52,11 +60,13 @@ function onChange(value: number) {
     current.value = settings.Countdown = clamp(settings.Countdown + value, settings.CountdownMin, settings.CountdownMax);
 }
 
+const testShow = ref(false);
+
 </script>
 
 <template>
     <header>Slow Down!</header>
-    <Ring :current :percent @change="onChange"></Ring>
+    <Ring :current :percent @change="onChange" />
     <footer>
         <Button class="play" @click="onPlayClick">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
@@ -67,7 +77,11 @@ function onChange(value: number) {
             </svg>
         </Button>
         <Button toggle></Button>
-        <Button></Button>
+        <Button @click="testShow = !testShow"></Button>
         <Button></Button>
     </footer>
+    <WakeLockAlert />
+    <Dialog v-model="testShow">
+        <section>This is a modal message it has popped up to tell the user something. Tap anywhere to dismiss.</section>
+    </Dialog>
 </template>
