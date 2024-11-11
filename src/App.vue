@@ -55,7 +55,7 @@ function onStop() {
 }
 
 function onChange(value: number) {
-    if (play.value) return;
+    if (!play.value) return;
     value *= settings.Sensitivity;
     current.value = settings.Countdown = clamp(settings.Countdown + value, settings.CountdownMin, settings.CountdownMax);
 }
