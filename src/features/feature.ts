@@ -1,4 +1,4 @@
-import { computed, readonly, ref } from "vue";
+import { reactive, readonly, ref } from "vue";
 
 export enum FeatureStatus {
     Unsupported,
@@ -7,10 +7,12 @@ export enum FeatureStatus {
 }
 
 export class Feature {
-    protected readonly _status = ref(FeatureStatus.Unsupported);
-    protected readonly _unsupported = computed(() => this._status.value === FeatureStatus.Unsupported);
-    protected readonly _noPermission = computed(() => this._status.value === FeatureStatus.NoPermission);
-    protected readonly _supported = computed(() => this._status.value === FeatureStatus.Supported);
+    private readonly _status = ref(FeatureStatus.Unsupported);
+    private readonly _reactive = reactive({
+        isUnsupported: true,
+        isNoPermission: false,
+        isSupported: true,
+    });
 
     public get status() {
         return this._status.value;
@@ -18,45 +20,40 @@ export class Feature {
 
     protected set status(value: FeatureStatus) {
         this._status.value = value;
+        this._reactive.isUnsupported = value === FeatureStatus.Unsupported;
+        this._reactive.isNoPermission = value === FeatureStatus.NoPermission;
+        this._reactive.isSupported = value === FeatureStatus.Supported;
     }
 
     public get statusRef() {
         return readonly(this._status);
     }
 
+    public get statusReactive() {
+        return readonly(this._reactive);
+    }
+
     public get isUnsupported() {
-        return this._unsupported.value;
+        return this._reactive.isUnsupported;
     }
 
     protected setUnsupported() {
         this.status = FeatureStatus.Unsupported;
     }
 
-    public get isUnsupportedRef() {
-        return this._unsupported;
-    }
-
     public get isNoPermission() {
-        return this._noPermission.value;
+        return this._reactive.isNoPermission;
     }
 
     protected setNoPermission() {
         this.status = FeatureStatus.NoPermission;
     }
 
-    public get isNoPermissionRef() {
-        return this._noPermission;
-    }
-
     public get isSupported() {
-        return this._supported.value;
+        return this._reactive.isSupported;
     }
 
     protected setSupported() {
         this.status = FeatureStatus.Supported;
-    }
-
-    public get isSupportedRef() {
-        return this._supported;
     }
 }
