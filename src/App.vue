@@ -14,6 +14,7 @@ const play = ref(true);
 const current = ref(settings.Countdown);
 const percent = ref(1);
 
+let countdownReal = settings.Countdown;
 let startMillis: number;
 let intervalHandle: number | undefined;
 
@@ -57,7 +58,8 @@ function onStop() {
 function onChange(value: number) {
     if (!play.value) return;
     value *= settings.Sensitivity;
-    current.value = settings.Countdown = clamp(settings.Countdown + value, settings.CountdownMin, settings.CountdownMax);
+    countdownReal = clamp(settings.Countdown + value, settings.CountdownMin, settings.CountdownMax);
+    current.value = settings.Countdown = Math.floor(countdownReal);
 }
 
 const testShow = ref(false);
