@@ -1,11 +1,21 @@
 import { InjectionKey } from "vue";
 import { Feature } from "./feature";
+import { SignalDispatcher } from "strongly-typed-events";
 
 export const WakeLockKey = Symbol() as InjectionKey<WakeLockFeature>;
 
 export class WakeLockFeature extends Feature {
-    private readonly ready: Promise<void> = this.init();
+    private readonly _releaseSignal: SignalDispatcher;
+    private readonly ready: Promise<void>;
+    private readonly onReleaseBind: () => void;
     private sentinal?: WakeLockSentinel;
+
+    public constructor () {
+        super();
+        this.ready = this.init();
+        this._releaseSignal = new SignalDispatcher();
+        this.onReleaseBind = this.onRelease.bind(this);
+    }
 
     public async request() {
         await this.ready;
@@ -13,7 +23,7 @@ export class WakeLockFeature extends Feature {
         if (this.sentinal) return true;
         try {
             this.sentinal = await navigator.wakeLock.request("screen");
-            this.sentinal.addEventListener("release", this.onRelease.bind(this));
+            this.sentinal.addEventListener("release", this.onReleaseBind);
             return true;
         } catch (e) {
             console.log(e);
@@ -22,10 +32,15 @@ export class WakeLockFeature extends Feature {
         }
     }
 
-    public release() {
+    public async release() {
         if (!this.sentinal) return;
-        this.sentinal.release();
+        this.sentinal.removeEventListener("release", this.onReleaseBind);
+        await this.sentinal.release();
         this.sentinal = undefined;
+    }
+
+    public get releaseSignal() {
+        return this._releaseSignal.asEvent();
     }
 
     private async init() {
@@ -48,5 +63,6 @@ export class WakeLockFeature extends Feature {
 
     private onRelease() {
         this.sentinal = undefined;
+        this._releaseSignal.dispatch();
     }
 }

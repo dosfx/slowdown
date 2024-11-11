@@ -14,27 +14,32 @@ const play = ref(true);
 const current = ref(settings.Countdown);
 const percent = ref(1);
 
+const showRequestDialog = ref(false);
+const showReleaseDialog = ref(false);
+
+wakelock.releaseSignal.subscribe(onRelease);
+
 let countdownReal = settings.Countdown;
 let startMillis: number;
 let intervalHandle: number | undefined;
 
 async function onPlayClick() {
     if (play.value) {
-        if (await onPlay()) return;
+        await onPlay();
     } else {
-        if (onStop()) return;
+        await onStop();
     }
-    play.value = !play.value;
 }
 
 async function onPlay() {
-    if (intervalHandle) return true;
+    if (intervalHandle) return;
     if (!await wakelock.request()) {
-        return true;
+        showRequestDialog.value = true;
+        return;
     }
     startMillis = Date.now();
     intervalHandle = setInterval(onTick, settings.Interval);
-    return false;
+    play.value = false;
 }
 
 function onTick() {
@@ -46,13 +51,14 @@ function onTick() {
     percent.value = remaining / settings.Countdown;
 }
 
-function onStop() {
-    if (!intervalHandle) return true;
+async function onStop() {
+    if (!intervalHandle) return;
     clearInterval(intervalHandle);
     intervalHandle = undefined;
-    wakelock.release();
+    await wakelock.release();
     current.value = settings.Countdown;
     percent.value = 1;
+    play.value = true;
 }
 
 function onChange(value: number) {
@@ -62,7 +68,10 @@ function onChange(value: number) {
     current.value = settings.Countdown = Math.floor(countdownReal);
 }
 
-const testShow = ref(false);
+function onRelease() {
+    onStop();
+    showReleaseDialog.value = true;
+}
 
 </script>
 
@@ -79,11 +88,13 @@ const testShow = ref(false);
             </svg>
         </Button>
         <Button toggle></Button>
-        <Button @click="testShow = !testShow"></Button>
         <Button></Button>
     </footer>
     <WakeLockAlert />
-    <Dialog v-model="testShow">
-        <section>This is a modal message it has popped up to tell the user something. Tap anywhere to dismiss.</section>
+    <Dialog v-model="showReleaseDialog">
+        <section>Show Down! lost focus. Counter has been reset. Tap anywhere to dismiss.</section>
+    </Dialog>
+    <Dialog v-model="showRequestDialog">
+        <section>Slow Down! cannot obtain a Wake Lock. This prevents your screen from dimming or locking, which would stop the countdown.</section>
     </Dialog>
 </template>

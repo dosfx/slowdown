@@ -7,12 +7,17 @@ export enum FeatureStatus {
 }
 
 export class Feature {
-    private readonly _status = ref(FeatureStatus.Unsupported);
-    private readonly _reactive = reactive({
-        isUnsupported: true,
-        isNoPermission: false,
-        isSupported: true,
-    });
+    private readonly _status;
+    private readonly _reactive;
+
+    public constructor() {
+        this._status = ref(FeatureStatus.Unsupported);
+        this._reactive = reactive({
+            isUnsupported: true,
+            isNoPermission: false,
+            isSupported: false,
+        });
+    }
 
     public get status() {
         return this._status.value;
