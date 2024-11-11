@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
 const { toggle = false } = defineProps<{ toggle?: boolean }>();
+const isActive = defineModel<boolean>({ default: false });
 const emit = defineEmits<{ click: [] }>();
-const isActive = ref(false);
 let state = false;
 
 function mousedown() {
@@ -22,20 +21,15 @@ function mouseup() {
     </button>
 </template>
 
-<style lang="less" module>
+<style lang="css" module>
 .btn {
     background-color: var(--mg);
     border: 0;
     border-radius: 50%;
     color: var(--fg);
-    font-size: 5vmin;
     margin-bottom: 5vmin;
     width: 15vmin;
     height: 15vmin;
-
-    svg {
-        width: 40%;
-    }
 }
 
 .active {

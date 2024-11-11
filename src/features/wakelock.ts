@@ -10,7 +10,7 @@ export class WakeLockFeature extends Feature {
     private readonly onReleaseBind: () => void;
     private sentinal?: WakeLockSentinel;
 
-    public constructor () {
+    public constructor() {
         super();
         this.ready = this.init();
         this._releaseSignal = new SignalDispatcher();
