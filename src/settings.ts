@@ -3,14 +3,17 @@ import { InjectionKey, readonly, ref, watch } from "vue";
 export const SettingsKey = Symbol() as InjectionKey<Settings>;
 
 const CountdownKey = "countdown";
+const LockKey = "lock";
 const VibrationKey = "vibration";
 
 export class Settings {
     private readonly _countdownRef;
+    private readonly _lockRef;
     private readonly _vibrationRef;
 
     constructor () {
         this._countdownRef = this.setup(CountdownKey, 60);
+        this._lockRef = this.setup(LockKey, false);
         this._vibrationRef = this.setup(VibrationKey, true);
     }
 
@@ -31,6 +34,14 @@ export class Settings {
     }
 
     public readonly Interval = 30 / 1000;
+
+    public get Lock() {
+        return this._lockRef.value;
+    }
+
+    public get LockRef() {
+        return this._lockRef;
+    }
 
     public readonly Sensitivity = 10;
 

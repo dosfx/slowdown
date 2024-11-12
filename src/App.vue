@@ -3,7 +3,7 @@ import { inject, ref } from "vue";
 import Button from "./components/Button.vue";
 import Ring from "./components/Ring.vue";
 import { SettingsKey } from "./settings";
-import { clamp } from "./util";
+import { activeColor, clamp } from "./util";
 import Dialog from "./components/Dialog.vue";
 import { WakeLockKey } from "./features/wakelock";
 import WakeLockAlert from "./components/WakeLockAlert.vue";
@@ -12,6 +12,7 @@ import { VibrationKey } from "./features/vibration";
 const settings = inject(SettingsKey)!;
 const vibration = inject(VibrationKey)!;
 const wakelock = inject(WakeLockKey)!;
+const lockSetting = settings.LockRef;
 const vibrationSetting = settings.VibrationRef;
 const play = ref(true);
 const current = ref(settings.Countdown);
@@ -77,6 +78,8 @@ function onRelease() {
     showReleaseDialog.value = true;
 }
 
+const vibActive = activeColor(vibrationSetting);
+const lockActive = activeColor(lockSetting);
 </script>
 
 <template>
@@ -91,10 +94,10 @@ function onRelease() {
                     d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z" />
             </svg>
         </Button>
-        <Button class="vibrate" v-model="vibrationSetting" toggle>
+        <Button v-model="vibrationSetting" toggle>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%">
-                <circle cx="50" cy="50" r="10" :fill="vibrationSetting ? 'var(--fg)' : 'black'" />
-                <g fill="transparent" stroke-width="8" stroke-linecap="round" :stroke="vibrationSetting ? 'var(--fg)' : 'black'">
+                <circle cx="50" cy="50" r="10" :fill="vibActive" />
+                <g fill="transparent" stroke-width="8" stroke-linecap="round" :stroke="vibActive">
                     <path d="M 35.8579 35.8579 A 20 20 1.5708 0 0 35.8579 64.1421" />
                     <path d="M 64.1421 35.8579 A 20 20 1.5708 0 1 64.1421 64.1421" />
                     <path d="M 25.2513 25.2513 A 35 35 1.5708 0 0 25.2513 74.7487" />
@@ -102,7 +105,12 @@ function onRelease() {
                 </g>
             </svg>
         </Button>
-        <Button></Button>
+        <Button v-model="lockSetting" toggle>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="60%">
+                <path :fill="lockActive"
+                    d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z" />
+            </svg>
+        </Button>
     </footer>
     <WakeLockAlert />
     <Dialog v-model="showReleaseDialog">
