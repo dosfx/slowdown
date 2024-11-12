@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, useTemplateRef } from 'vue';
-import { clamp } from '../util';
+import { clamp, fmtTime } from '../util';
 
 const center = 50;
 
@@ -9,9 +9,7 @@ const emit = defineEmits<{ change: [value: number] }>();
 const ringPath = useTemplateRef("ringPath");
 const svg = useTemplateRef("svg");
 
-const timeFmt = computed(() => {
-    return Math.floor(props.current / 60).toFixed(0).padStart(2, "0") + ":" + Math.floor(props.current % 60).toFixed(0).padStart(2, "0")
-});
+const timeFmt = computed(() => fmtTime(props.current));
 
 const dash = computed(() => {
     if (!ringPath.value) return "none";
