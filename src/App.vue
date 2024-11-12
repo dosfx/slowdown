@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref } from "vue";
+import { inject, ref, useTemplateRef } from "vue";
 import Button from "./components/Button.vue";
 import Ring from "./components/Ring.vue";
 import { SettingsKey } from "./settings";
@@ -14,12 +14,13 @@ const vibration = inject(VibrationKey)!;
 const wakelock = inject(WakeLockKey)!;
 const lockSetting = settings.LockRef;
 const vibrationSetting = settings.VibrationRef;
+
+const requestDialog = useTemplateRef("requestDialog");
+const releaseDialog = useTemplateRef("releaseDialog");
+
 const play = ref(true);
 const current = ref(settings.Countdown);
 const percent = ref(1);
-
-const showRequestDialog = ref(false);
-const showReleaseDialog = ref(false);
 
 wakelock.releaseSignal.subscribe(onRelease);
 
@@ -38,7 +39,7 @@ async function onPlayClick() {
 async function onPlay() {
     if (intervalHandle) return;
     if (!await wakelock.request()) {
-        showRequestDialog.value = true;
+        requestDialog.value?.show();
         return;
     }
     startMillis = Date.now();
@@ -75,7 +76,7 @@ function onChange(value: number) {
 
 function onRelease() {
     onStop();
-    showReleaseDialog.value = true;
+    releaseDialog.value?.show();
 }
 
 const vibActive = activeColor(vibrationSetting);
@@ -113,10 +114,10 @@ const lockActive = activeColor(lockSetting);
         </Button>
     </footer>
     <WakeLockAlert />
-    <Dialog v-model="showReleaseDialog">
+    <Dialog ref="releaseDialog">
         <section>Show Down! lost focus. Counter has been reset. Tap anywhere to dismiss.</section>
     </Dialog>
-    <Dialog v-model="showRequestDialog">
+    <Dialog ref="requestDialog">
         <section>Slow Down! cannot obtain a Wake Lock. This prevents your screen from dimming or locking, which would
             stop the countdown.</section>
     </Dialog>

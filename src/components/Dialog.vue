@@ -1,11 +1,23 @@
 <script setup lang="ts">
-const show = defineModel();
+import { ref } from 'vue';
+
+defineExpose({ hide, show });
+
+const showRef = ref(false);
+
+function hide() {
+    showRef.value = false;
+}
+
+function show() {
+    showRef.value = true;
+}
 </script>
 
 <template>
     <Transition :enter-from-class="$style.hidden" :leave-to-class="$style.hidden"
         :enter-active-class="$style.transitionActive" :leave-active-class="$style.transitionActive">
-        <div :class="$style.overlay" v-if="show" @click="show = false">
+        <div :class="$style.overlay" v-if="showRef" @click="showRef = false">
             <div :class="$style.dialog">
                 <slot></slot>
             </div>
