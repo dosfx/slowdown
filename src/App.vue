@@ -8,19 +8,24 @@ import Dialog from "./components/Dialog.vue";
 import { WakeLockKey } from "./features/wakelock";
 import WakeLockAlert from "./components/WakeLockAlert.vue";
 import { VibrationKey } from "./features/vibration";
+import LockScreen from "./components/LockScreen.vue";
+import { FullscreenKey } from "./features/fullscreen";
 
 const settings = inject(SettingsKey)!;
+const fullscreen = inject(FullscreenKey)!;
 const vibration = inject(VibrationKey)!;
 const wakelock = inject(WakeLockKey)!;
 const lockSetting = settings.LockRef;
 const vibrationSetting = settings.VibrationRef;
 
+const lockRef = useTemplateRef("lockScreen");
 const requestDialog = useTemplateRef("requestDialog");
 const releaseDialog = useTemplateRef("releaseDialog");
 
 const play = ref(true);
 const current = ref(settings.Countdown);
 const percent = ref(1);
+const fullscreenStatus = fullscreen.statusReactive;
 
 wakelock.releaseSignal.subscribe(onRelease);
 
@@ -42,6 +47,7 @@ async function onPlay() {
         requestDialog.value?.show();
         return;
     }
+    lockRef.value?.show();
     startMillis = Date.now();
     intervalHandle = setInterval(onTick, settings.Interval);
     play.value = false;
@@ -74,8 +80,18 @@ function onChange(value: number) {
     current.value = settings.Countdown = Math.floor(countdownReal);
 }
 
+function onLockClick() {
+    if (play.value) {
+        lockSetting.value = !lockSetting.value;
+    } else {
+        lockSetting.value = true;
+        lockRef.value?.show();
+    }
+}
+
 function onRelease() {
     onStop();
+    lockRef.value?.hide();
     releaseDialog.value?.show();
 }
 
@@ -106,13 +122,14 @@ const lockActive = activeColor(lockSetting);
                 </g>
             </svg>
         </Button>
-        <Button v-model="lockSetting" toggle>
+        <Button v-model="lockSetting" @click="onLockClick" v-if="fullscreenStatus.isSupported">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="60%">
                 <path :fill="lockActive"
                     d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z" />
             </svg>
         </Button>
     </footer>
+    <LockScreen ref="lockScreen" :current />
     <WakeLockAlert />
     <Dialog ref="releaseDialog">
         <section>Show Down! lost focus. Counter has been reset. Tap anywhere to dismiss.</section>

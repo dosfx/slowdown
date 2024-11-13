@@ -10,7 +10,7 @@ function mousedown() {
 }
 
 function mouseup() {
-    isActive.value = toggle && !state;
+    isActive.value = toggle ? !state : state;
     emit("click");
 }
 </script>

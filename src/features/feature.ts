@@ -58,6 +58,10 @@ export class Feature {
         return this._reactive.isSupported;
     }
 
+    public get isNotSupported() {
+        return !this.isSupported;
+    }
+
     protected setSupported() {
         this.status = FeatureStatus.Supported;
     }

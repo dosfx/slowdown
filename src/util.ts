@@ -9,5 +9,13 @@ export function clamp(num: number, min: number, max: number): number {
 }
 
 export function fmtTime(seconds: number) {
-    return Math.floor(seconds / 60).toFixed(0).padStart(2, "0") + ":" + Math.floor(seconds % 60).toFixed(0).padStart(2, "0")
+    return fmtMinutes(seconds) + ":" + fmtSeconds(seconds); 
+}
+
+export function fmtMinutes(seconds: number) {
+    return Math.floor(seconds / 60).toFixed(0).padStart(2, "0");
+}
+
+export function fmtSeconds(seconds: number) {
+    return Math.floor(seconds % 60).toFixed(0).padStart(2, "0");
 }
