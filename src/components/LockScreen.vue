@@ -5,7 +5,8 @@ import { FullscreenKey } from '../features/fullscreen';
 import { clamp, fmtMinutes, fmtSeconds } from '../util';
 
 const { current } = defineProps<{ current: number }>();
-defineExpose({ hide, show });
+const emit = defineEmits<{ enter: [], exit: [] }>();
+defineExpose({ hide, isVisible, show });
 
 const fullscreen = inject(FullscreenKey)!;
 const settings = inject(SettingsKey)!;
@@ -22,6 +23,10 @@ const secFmt = computed(() => fmtSeconds(current));
 async function hide() {
     if (!showRef.value) return;
     await fullscreen.exit();
+}
+
+function isVisible() {
+    return showRef.value;
 }
 
 async function show() {
@@ -41,9 +46,13 @@ async function show() {
 }
 
 function onChange(enter: boolean) {
-    if (enter) return
+    if (enter) {
+        emit("enter");
+        return;
+    }
     showRef.value = false;
     fullscreen.change.unsub(onChange);
+    emit("exit");
 }
 
 let slideStart = 0;

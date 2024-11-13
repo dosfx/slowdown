@@ -66,7 +66,6 @@ function onPointerMove(event: PointerEvent) {
 
 <template>
     <svg :class="$style.main" viewBox="0 0 100 100" ref="svg">
-        <!-- <rect width="100" height="100" fill="grey" /> -->
         <path :class="[$style.ring, $style.bg]" d="M 50 5 A 45 45 0 0 1 50 95 A 45 45 0 0 1 50 5" />
         <path :class="[$style.ring, $style.fg]" d="M 50 5 A 45 45 0 0 1 50 95 A 45 45 0 0 1 50 5" ref="ringPath"
             :stroke-dasharray="dash" @pointercancel="endDrag" @pointerdown.left="onPointerDown" />

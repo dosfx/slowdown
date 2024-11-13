@@ -49,15 +49,23 @@ async function onPlay() {
     }
     lockRef.value?.show();
     startMillis = Date.now();
-    intervalHandle = setInterval(onTick, settings.Interval);
+    resetInterval();
     play.value = false;
 }
 
+function resetInterval() {
+    clearInterval(intervalHandle);
+    onTick();
+    const interval = lockRef.value?.isVisible() ? 250 : settings.Interval;
+    intervalHandle = setInterval(onTick, interval);
+}
+
 function onTick() {
-    const remaining = settings.Countdown - ((Date.now() - startMillis) / 1000);
+    let remaining = settings.Countdown - ((Date.now() - startMillis) / 1000);
     if (remaining <= 0) {
         startMillis = Date.now();
         vibration.vibrate();
+        remaining = settings.Countdown;
     }
     current.value = Math.ceil(remaining);
     percent.value = remaining / settings.Countdown;
@@ -86,6 +94,7 @@ function onLockClick() {
     } else {
         lockSetting.value = true;
         lockRef.value?.show();
+        resetInterval();
     }
 }
 
@@ -129,7 +138,7 @@ const lockActive = activeColor(lockSetting);
             </svg>
         </Button>
     </footer>
-    <LockScreen ref="lockScreen" :current />
+    <LockScreen ref="lockScreen" :current @exit="resetInterval" />
     <WakeLockAlert />
     <Dialog ref="releaseDialog">
         <section>Show Down! lost focus. Counter has been reset. Tap anywhere to dismiss.</section>
