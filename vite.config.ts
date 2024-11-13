@@ -8,6 +8,7 @@ export default defineConfig({
     basicSsl(),
     vue(),
   ],
+  base: "/slowdown/",
   server: {
     host: "0.0.0.0",
     https: true,
