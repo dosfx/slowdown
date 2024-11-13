@@ -33,7 +33,7 @@ export class Settings {
         return readonly(this._countdownRef);
     }
 
-    public readonly Interval = 30 / 1000;
+    public readonly Interval = 1000 / 60;
 
     public get Lock() {
         return this._lockRef.value;
