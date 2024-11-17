@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 defineExpose({ hide, show });
+defineOptions({ inheritAttrs: false });
 
 const showRef = ref(false);
 
@@ -18,7 +19,7 @@ function show() {
     <Transition :enter-from-class="$style.hidden" :leave-to-class="$style.hidden"
         :enter-active-class="$style.transitionActive" :leave-active-class="$style.transitionActive">
         <div :class="$style.overlay" v-if="showRef" @click="showRef = false">
-            <div :class="$style.dialog">
+            <div :class="$style.dialog" v-bind="$attrs">
                 <slot></slot>
             </div>
         </div>

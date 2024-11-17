@@ -10,6 +10,7 @@ import WakeLockAlert from "./components/WakeLockAlert.vue";
 import { VibrationKey } from "./features/vibration";
 import LockScreen from "./components/LockScreen.vue";
 import { FullscreenKey } from "./features/fullscreen";
+import SettingsScreen from "./components/SettingsScreen.vue";
 
 const settings = inject(SettingsKey)!;
 const fullscreen = inject(FullscreenKey)!;
@@ -21,6 +22,7 @@ const vibrationSetting = settings.VibrationRef;
 const lockRef = useTemplateRef("lockScreen");
 const requestDialog = useTemplateRef("requestDialog");
 const releaseDialog = useTemplateRef("releaseDialog");
+const settingsScreen = useTemplateRef("settingsScreen");
 
 const play = ref(true);
 const current = ref(settings.Countdown);
@@ -137,6 +139,7 @@ const lockActive = activeColor(lockSetting);
                     d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z" />
             </svg>
         </Button>
+        <Button @click="settingsScreen?.show"></Button>
     </footer>
     <LockScreen ref="lockScreen" :current @exit="resetInterval" />
     <WakeLockAlert />
@@ -147,4 +150,5 @@ const lockActive = activeColor(lockSetting);
         <section>Slow Down! cannot obtain a Wake Lock. This prevents your screen from dimming or locking, which would
             stop the countdown.</section>
     </Dialog>
+    <SettingsScreen ref="settingsScreen" />
 </template>

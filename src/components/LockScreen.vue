@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, ref, useTemplateRef } from 'vue';
-import { SettingsKey } from '../settings';
+import { SettingsKey, UnlockMethodSetting } from '../settings';
 import { FullscreenKey } from '../features/fullscreen';
 import { clamp, fmtMinutes, fmtSeconds } from '../util';
+import Button from './Button.vue';
 
 const { current } = defineProps<{ current: number }>();
 const emit = defineEmits<{ enter: [], exit: [] }>();
@@ -10,6 +11,7 @@ defineExpose({ hide, isVisible, show });
 
 const fullscreen = inject(FullscreenKey)!;
 const settings = inject(SettingsKey)!;
+const unlockRef = settings.UnlockRef;
 
 const active = ref(false);
 const div = useTemplateRef("div");
@@ -94,7 +96,13 @@ function onPointerUp() {
         <span :class="$style.current" style="margin-top: 20vh;">{{ minFmt }}</span>
         <span :class="$style.current">{{ secFmt }}</span>
         <span :class="$style.spacer"></span>
-        <div ref="unlock" :class="$style.unlock">
+        <Button v-if="unlockRef == UnlockMethodSetting.Button" @click="hide">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="60%">
+                <path
+                    d="M144 144c0-44.2 35.8-80 80-80c31.9 0 59.4 18.6 72.3 45.7c7.6 16 26.7 22.8 42.6 15.2s22.8-26.7 15.2-42.6C331 33.7 281.5 0 224 0C144.5 0 80 64.5 80 144l0 48-16 0c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-192c0-35.3-28.7-64-64-64l-240 0 0-48z" />
+            </svg>
+        </Button>
+        <div v-else ref="unlock" :class="$style.unlock">
             <button :class="[$style.slider, { [$style.active]: active }]" :style="{ marginLeft: sliderLeft }"
                 @pointerdown.left="onPointerDown" @pointerup.left="onPointerUp">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
@@ -121,6 +129,10 @@ function onPointerUp() {
 
 .spacer {
     flex: 1;
+}
+
+.unlockButton {
+    margin-bottom: 10vh;
 }
 
 .unlock {

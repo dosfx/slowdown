@@ -15,6 +15,6 @@ export class VibrationFeature extends Feature {
     public vibrate() {
         if (!this.isSupported) return;
         if (!this.settings.Vibration) return;
-        navigator.vibrate(this.settings.VibrationPattern);
+        navigator.vibrate(this.settings.VibrationPatternArray);
     }
 }
